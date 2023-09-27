@@ -1,0 +1,119 @@
+@font-face {
+  font-family: "baron_neueregular";
+  src: url("../fonts/baron-neue-webfont.eot") format("embedded-opentype"), url("../fonts/baron-neue-webfont.svg") format("svg#baron_neueregular"), url("../fonts/baron-neue-webfont.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: "baron_neueregular", Arial; }
+  * header {
+    background-image: url("../img/man-thunder4.png"), linear-gradient(to bottom, black, #918f8f);
+    background-blend-mode: multiply;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 400px; }
+    * header .contenedor-titulo {
+      color: #fff;
+      text-align: center; }
+      * header .contenedor-titulo .titulo, * header .contenedor-titulo .subtitulo {
+        font-size: 80px;
+        text-shadow: 4px 3px 5px black;
+        backdrop-filter: blur(2px); }
+      * header .contenedor-titulo .subtitulo {
+        font-size: 50px;
+        font-style: italic; }
+  * main {
+    background: #000; }
+    * main section > button {
+      box-shadow: 5px 3px 2px #000000; }
+      * main section > button span i {
+        margin: 0px 10px; }
+    * main section table {
+      box-shadow: 5px 3px 2px #000000; }
+      * main section table .btn {
+        margin: 0 10px; }
+        * main section table .btn span {
+          display: flex;
+          justify-content: center;
+          align-items: center; }
+          * main section table .btn span i {
+            margin: 0px 10px; }
+          * main section table .btn span p {
+            margin-bottom: 0; }
+  * footer .copyright {
+    width: 100%;
+    background-color: #000000; }
+    * footer .copyright h4 {
+      font-size: 12px;
+      text-align: center;
+      color: #fff;
+      font-weight: 100;
+      font-style: italic; }
+  @media screen and (max-width: 992px) {
+    * header {
+      min-width: 100%;
+      min-height: 300px; }
+      * header .contenedor-titulo {
+        margin-top: 20px; }
+        * header .contenedor-titulo .titulo {
+          font-size: 50px; }
+        * header .contenedor-titulo .subtitulo {
+          font-size: 30px; }
+    * main {
+      min-width: 100%;
+      min-height: auto; }
+    * footer {
+      min-width: 100%;
+      min-height: auto; } }
+  @media screen and (max-width: 768px) {
+    * header {
+      min-width: 100%;
+      min-height: 300px; }
+      * header .contenedor-titulo {
+        margin-top: 20px; }
+        * header .contenedor-titulo .titulo {
+          font-size: 40px; }
+        * header .contenedor-titulo .subtitulo {
+          font-size: 25px; }
+    * main {
+      min-width: 100%;
+      min-height: auto; }
+      * main table {
+        font-size: 14px; }
+        * main table td {
+          flex-direction: column; }
+          * main table td .btn {
+            margin-bottom: 10px; }
+    * footer {
+      min-width: 100%;
+      min-height: auto; } }
+  @media screen and (max-width: 405px) {
+    * header {
+      min-width: 100%;
+      min-height: 200px; }
+      * header .contenedor-titulo {
+        margin-top: 20px; }
+        * header .contenedor-titulo .titulo {
+          font-size: 22px; }
+        * header .contenedor-titulo .subtitulo {
+          font-size: 15px; }
+    * main {
+      min-width: 100%;
+      min-height: auto; }
+      * main table {
+        font-size: 12px; }
+        * main table td {
+          flex-direction: column; }
+          * main table td .btn {
+            margin-bottom: 10px; }
+    * footer {
+      min-width: 100%;
+      min-height: auto; } }
+
+/*# sourceMappingURL=style.css.map */
