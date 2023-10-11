@@ -9,7 +9,8 @@
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-family: "baron_neueregular", Arial; }
+  font-family: "baron_neueregular", Arial;
+  text-transform: uppercase; }
   * header {
     background-image: url("../img/man-thunder4.png"), linear-gradient(to bottom, black, #918f8f);
     background-blend-mode: multiply;
