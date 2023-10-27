@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="node_modules/alertifyjs/build/css/alertify.min.css">
     <title>CRUD</title>
 </head>
 <body>
@@ -18,8 +19,7 @@
     
         <main class="main row">
             <section class="gods col-12 mt-3">
-                <button class="btn btn-light mb-2" id="addGod" type="button" data-bs-toggle="modal" data-bs-target="#modal"><span><i class="fa-solid fa-plus"></i></span>Add God</button>
-                
+                <button class="btn btn-light mb-2" id="addGod" type="button" data-bs-toggle="modal" data-bs-target="#modal"><span><i class="fa-solid fa-plus"></i></span>Add God</button>                
                 <!-- Modal -->
                 <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
                   <div class="modal-dialog">
@@ -29,7 +29,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        ...
+                        
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -84,9 +84,7 @@
                           <td></td>
                           <td></td>
                           <td class="d-flex justify-content-center">
-                            <button class="btn btn-danger" id="removeGiant" type="button" data-bs-toggle="modal" data-bs-target="#modal"><span><i class="fa-solid fa-xmark"></i><p class="hidden-md">Remove Giant</p></span></button>
-                            <button class="btn btn-warning" id="editGiant" type="button" data-bs-toggle="modal" data-bs-target="#modal"><span><i class="fa-solid fa-pen"></i><p class="hidden-md">Edit Giant</p></span></button>
-                            <button class="btn btn-info" id="seeGiant" type="button" data-bs-toggle="modal" data-bs-target="#modal"><span><i class="fa-solid fa-eye"></i><p class="hidden-md">See Giant</p></span></button>
+                            <!-- Botones de cada registro -->
                           </td>
                         </tr>
                       </tbody>
@@ -102,6 +100,7 @@
     </div>
     <script src="js/modal.js"></script>
     <script src="js/mysql.js"></script>
+    <script src="node_modules/alertifyjs/build/alertify.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/9fc6c9c916.js" crossorigin="anonymous"></script>
 </body>
