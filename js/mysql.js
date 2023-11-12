@@ -23,15 +23,17 @@ var con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "ragnarok"
+  database: "ragnarok",
+  connectTimeout: 60000,
 });
 
 // conexion o error a la base de datos
 con.connect(function (err) {
   if (err){
+    console.error('Error: '+err.stack);
     throw err;
   } else{
-    console.log("Connected!");
+    console.log("Connected as id "+connection.threadID);
   }
 });
 
