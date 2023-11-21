@@ -33,7 +33,7 @@ con.connect(function (err) {
     console.error('Error: '+err.stack);
     throw err;
   } else{
-    console.log("Connected as id "+connection.threadID);
+    console.log("Connected");
   }
 });
 
@@ -170,7 +170,7 @@ app.delete('/api/giant/:id', (req,res)=>{
 });
 
 // asignar puerto ya sea asignada o 3000
-const puerto = process.env.PUERTO || 3800;
+const puerto = process.env.PUERTO || 3880;
 
 // conexion con la ruta 
 app.listen(puerto, function(){

@@ -1,18 +1,17 @@
-// const { response } = require("express");
+$(function(){
 
-const alertify = require("alertifyjs");
-
+obtenerDatos();
 // obtener datos
 async function obtenerDatos() {
-  // Fetch para obtener los datos de la base de datos a traves de http de la BD
-  await fetch("http://localhost:3800/api/gods")
+  // async fetch para obtener los datos de la base de datos a traves de http de la BD
+  await fetch("http://localhost:3880/api/gods")
     .then((response) => response.json())
     .then((dataGods) => mostrarDioses(dataGods))
     .catch((error) => {
       console.warn(`Error al obtener la lista de gods`);
     });
 
-  await fetch("http://localhost:3800/api/giants")
+  await fetch("http://localhost:3880/api/giants")
     .then((response) => response.json())
     .then((dataGiant) => mostrarGigantes(dataGiant))
     .catch((error) => {
@@ -20,7 +19,7 @@ async function obtenerDatos() {
     });
 }
 // cargar los documentos al cargar la pantalla
-document.addEventListener("DOMContentLoaded", obtenerDatos);
+// document.addEventListener("DOMContentLoaded", obtenerDatos);
 
 // Elementos del modal guardado en variables
 var modal = document.getElementById("modal");
@@ -116,7 +115,7 @@ on(document, "click", "#addGod", (e) => {
     ).value;
     let powerGod = document.getElementById("powerGod").value;
     let imgGod = document.getElementById("imgGod").files[0].name;
-    await fetch("http://localhost:3800/api/gods", {
+    await fetch("http://localhost:3880/api/gods", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -167,7 +166,7 @@ on(document, "click", "#addGiant", (e) => {
 		).value;
 		let powerGiant = document.getElementById("powerGiant").value;
 		let imgGiant = document.getElementById("imgGiant").files[0].name;
-		await fetch("http://localhost:3800/api/giants", {
+		await fetch("http://localhost:3880/api/giants", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
@@ -192,7 +191,7 @@ on(document, "click", "#removeGod", (e) => {
   alertify.confirm(
     "Deseas eliminar este dios",
     async function () {
-      await fetch("http://localhost:3800/api/god/" + id, { method: "DELETE" })
+    await fetch("http://localhost:3880/api/god/" + id, { method: "DELETE" })
         .then((res) => res.json())
         .then(() => location.reload());
       alertify.success("Eliminado");
@@ -210,7 +209,7 @@ on(document, "click", "#removeGiant", (e) => {
   alertify.confirm(
     "Deseas eliminar este gigante",
     async function () {
-      await fetch("http://localhost:3800/api/giant/" + id, {
+    await fetch("http://localhost:3880/api/giant/" + id, {
         method: "DELETE",
       })
         .then((res) => res.json())
@@ -223,17 +222,14 @@ on(document, "click", "#removeGiant", (e) => {
   );
 });
 
+
 // FUNCION PARA EDITAR DIOSES 
-on(document, "click", "#editGod", (e) => {
-	const fila = e.target.parentNode.parentNode.parentNode.parentNode;
-	const id = fila.firstElementChild.innerHTML;
-	const name = fila.children[1].innerHTML;
-	const god = fila.children[2].innerHTML;
-	const power = fila.children[3].innerHTML;
-	const img = fila.children[4].innerHTML;
+on(document, "click", "#editGod", async(e) => {
+    const fila = e.target.parentNode.parentNode.parentNode.parentNode;
+    const id = fila.firstElementChild.innerHTML;
 
 	modalTitle.innerHTML = document.getElementById("editGod").textContent;
-	modalBody.innerHTML = `
+    modalBody.innerHTML = `
 	<form id="formEditGod">
 		<div class="mb-3">
 			<label for="nameGod" class="form-label">Name in the Netflix Serie</label>
@@ -254,8 +250,30 @@ on(document, "click", "#editGod", (e) => {
 		<button type="submit" class="btn btn-warning" id="btnSubmit">Edit</button>
 	</form>
 	`;
-	document.getElementById('nameGod').value=name;
-	document.getElementById('nameGodRepresentation').value=god;
-	document.getElementById('powerGod').value=power;
-	document.getElementById('formEditGod');
+	let editarDios = true;
+	obtener_datos_por_id(id, editarDios)
+  });
+
+  obtener_datos_por_id=async (id, editarDios)=>{
+	if (editarDios == true) {
+    await fetch("http://localhost:3880/api/god/" + id, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const name = data[0].Name;
+        const god = data[0].God;
+        const power = data[0].Power;
+        $("#nameGod").val(name);
+        $("#nameGodRepresentation").val(god);
+        $("#powerGod").val(power);
+        $("#imgGod").on("change", function () {
+          alertify.success("Se ha modificado la imagen");
+        });
+      })
+      .catch((err) => console.log(err));
+  }
+	
+  }
 });
