@@ -43,6 +43,8 @@ app.get('/', function(req,res){
   res.send('Ruta inicio');
 });
 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
+// http://localhost:3880/api/gods
 // Mostrar todos los dioses 
 app.get('/api/gods', (req,res)=>{
   con.query('SELECT * FROM gods', (error,filas)=>{
@@ -54,6 +56,8 @@ app.get('/api/gods', (req,res)=>{
   });
 });
 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
+// http://localhost:3880/api/giants
 // Mostrar todos los gigantes 
 app.get('/api/giants', (req,res)=>{
   con.query('SELECT * FROM giants', (error,filas)=>{
@@ -65,6 +69,8 @@ app.get('/api/giants', (req,res)=>{
   });
 });
 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
+// http://localhost:3880/api/god/22
 // Mostrar un dios en especifico 
 app.get('/api/god/:id', (req,res)=>{
   con.query('SELECT * FROM gods WHERE ID_God = ?', [req.params.id], (error,fila)=>{
@@ -76,7 +82,9 @@ app.get('/api/god/:id', (req,res)=>{
   });
 });
 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
 // Mostrar 1 gigante en especifico 
+// http://localhost:3880/api/giant/9
 app.get('/api/giant/:id', (req,res)=>{
   con.query('SELECT * FROM giants WHERE ID_Giant = ?', [req.params.id], (error,fila)=>{
     if(error){
@@ -87,6 +95,7 @@ app.get('/api/giant/:id', (req,res)=>{
   });
 });
 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
 // Insertar 1 dios en especifico 
 app.post('/api/gods', (req,res)=>{
   let data = {name:req.body.Name, god:req.body.God, power:req.body.Power, img:req.body.img};
@@ -100,7 +109,8 @@ app.post('/api/gods', (req,res)=>{
   });
 });
 
-// Insertar 1 dios en especifico 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
+// Insertar 1 gigante en especifico 
 app.post('/api/giants', (req,res)=>{
   let data = {name:req.body.Name, giant:req.body.Giant, power:req.body.Power, img:req.body.img};
   let sql = "INSERT INTO giants SET ?"
@@ -113,7 +123,17 @@ app.post('/api/giants', (req,res)=>{
   });
 });
 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
 // Editar 1 dios
+
+// http://localhost:3880/api/god/22
+// {
+//   "Name": "Imant",
+//   "God": "freyja",
+//   "Power": "Mistioquinesis: como diosa de la magia, Freya tiene control absoluto y autoridad divina sobre la magia",
+//   "img": "Iman.webp"
+// }
+
 app.put('/api/god/:id', (req,res)=>{
   let id = req.params.id;
   let name = req.body.Name;
@@ -130,7 +150,16 @@ app.put('/api/god/:id', (req,res)=>{
   });
 });
 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
 // Editar 1 Gigante
+// http://localhost:3880/api/giant/6
+// {
+//   "Name": "Fwert",
+//   "Giant": "Fwerthj",
+//   "Power": "Mistioquinesis: como diosa de la magia, Freya tiene control absoluto y autoridad divina sobre la magia",
+//   "img": "Iman.webp"
+// }
+
 app.put('/api/giant/:id', (req,res)=>{
   let id = req.params.id;
   let name = req.body.Name;
@@ -147,6 +176,8 @@ app.put('/api/giant/:id', (req,res)=>{
   });
 });
 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
+// http://localhost:3880/api/god/26
 //Eliminar 1 Dios
 app.delete('/api/god/:id', (req,res)=>{
   con.query('DELETE FROM gods WHERE ID_God = ?', [req.params.id], function(error, filas){
@@ -158,6 +189,8 @@ app.delete('/api/god/:id', (req,res)=>{
   });
 });
 
+// ------------------------------FUNCIONA CORRECTAMENTE-----------------------------------------
+// http://localhost:3880/api/giant/9
 //Eliminar 1 Gigante
 app.delete('/api/giant/:id', (req,res)=>{
   con.query('DELETE FROM giants WHERE ID_Giant = ?', [req.params.id], function(error, filas){

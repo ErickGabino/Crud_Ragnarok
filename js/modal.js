@@ -224,10 +224,9 @@ on(document, "click", "#removeGiant", (e) => {
 
 
 // FUNCION PARA EDITAR DIOSES 
-on(document, "click", "#editGod", async(e) => {
+on(document, "click", "#editGod", (e) => {
     const fila = e.target.parentNode.parentNode.parentNode.parentNode;
     const id = fila.firstElementChild.innerHTML;
-
 	modalTitle.innerHTML = document.getElementById("editGod").textContent;
     modalBody.innerHTML = `
 	<form id="formEditGod">
@@ -250,30 +249,27 @@ on(document, "click", "#editGod", async(e) => {
 		<button type="submit" class="btn btn-warning" id="btnSubmit">Edit</button>
 	</form>
 	`;
-	let editarDios = true;
-	obtener_datos_por_id(id, editarDios)
-  });
 
-  obtener_datos_por_id=async (id, editarDios)=>{
-	if (editarDios == true) {
-    await fetch("http://localhost:3880/api/god/" + id, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const name = data[0].Name;
-        const god = data[0].God;
-        const power = data[0].Power;
-        $("#nameGod").val(name);
-        $("#nameGodRepresentation").val(god);
-        $("#powerGod").val(power);
-        $("#imgGod").on("change", function () {
-          alertify.success("Se ha modificado la imagen");
-        });
-      })
-      .catch((err) => console.log(err));
-  }
-	
-  }
+	obtener_datos_dios(id);
+
+	function obtener_datos_dios(id){
+		let nameGod = document.getElementById("nameGod");
+		let god = document.getElementById("nameGodRepresentation");
+		let powerGod = document.getElementById("powerGod");
+		let imgGod = document.getElementById("imgGod").files[0].name;
+
+		let formEditGod = document.getElementById("formEditGod");
+		formEditGod.addEventListener("submit", function(e){
+			e.preventDefault();
+			fetch("http://localhost:3880/api/god/"+id,{
+				method:"GET",
+				
+
+			})
+			.then((res) => res.json())
+			.then(data => console.log(data))
+		});
+	}
+  });
 });
+
