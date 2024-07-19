@@ -1,22 +1,33 @@
-$(function(){
+$(async function(){
 
 obtenerDatos();
 // obtener datos
 async function obtenerDatos() {
-  // async fetch para obtener los datos de la base de datos a traves de http de la BD
-  await fetch("http://localhost:3880/api/gods")
-    .then((response) => response.json())
-    .then((dataGods) => mostrarDioses(dataGods))
-    .catch((error) => {
-      console.warn(`Error al obtener la lista de gods`);
-    });
 
-  await fetch("http://localhost:3880/api/giants")
-    .then((response) => response.json())
-    .then((dataGiant) => mostrarGigantes(dataGiant))
-    .catch((error) => {
-      console.warn(`Error al obtener la lista de giants`);
-    });
+  // async fetch para obtener los datos de la base de datos a traves de http de la BD
+ 	try{
+		let obtener = await fetch("http://localhost:3880/api/gods");
+		if(obtener.ok){
+			let data = await obtener.json();
+			mostrarDioses(data);
+		}else{
+			throw new Error('Problema con internet.');
+		}
+	}catch(error){
+		console.error('El problema es: ', error);
+	}
+	
+	try{
+		let response = await fetch("http://localhost:3880/api/giants");
+		if(response.ok){
+			let data = await response.json();
+			mostrarGigantes(data);
+		}
+
+
+	}catch(error){
+		console.error('El problema es: ',error);
+	}
 }
 // cargar los documentos al cargar la pantalla
 // document.addEventListener("DOMContentLoaded", obtenerDatos);
@@ -32,8 +43,8 @@ let tbodyGiants = document.getElementById("tbodyGiants");
 let resultados = "";
 
 // Funciones para mostrar datos en la TABLA
-function mostrarDioses(dioses) {
-  dioses.forEach((dios) => {
+async function mostrarDioses(dioses) {
+  await dioses.forEach((dios) => {
     resultados += `
 			<tr>
 				<th scope="row">${dios.ID_God}</th>
@@ -41,8 +52,8 @@ function mostrarDioses(dioses) {
 				<td>${dios.God}</td>
 				<td>${dios.Power}</td>
 				<td class="d-flex justify-content-center flex-column"">
-					<button class="btn btn-danger removeGod" class="removeGod" id="removeGod" type="button"><span><i class="fa-solid fa-xmark"></i><p class="hidden-md">Remove God</p></span></button>
-					<button class="btn btn-warning editGod" class="editGod" id="editGod" type="button" data-bs-toggle="modal" data-bs-target="#modal"><span><i class="fa-solid fa-pen"></i><p class="hidden-md">Edit God</p></span></button>
+					<button class="btn btn-danger removeGod" class="removeGod" id="removeGod" type="button" onclick="borrarRegistro(${dios.ID_God},'gods');"><span><i class="fa-solid fa-xmark"></i><p class="hidden-md">Remove God</p></span></button>
+					<button class="btn btn-warning editGod" class="editGod" id="editGod" type="button" data-bs-toggle="modal" data-bs-target="#modal" onclick="editarRegistro(${dios.ID_God},'gods');"><span><i class="fa-solid fa-pen"></i><p class="hidden-md">Edit God</p></span></button>
 					<button class="btn btn-info seeGod" class="seeGod" id="seeGod" type="button" data-bs-toggle="modal" data-bs-target="#modal"><span><i class="fa-solid fa-eye"></i><p class="hidden-md">See God</p></span></button>
 				</td>
 			</tr>
@@ -52,8 +63,8 @@ function mostrarDioses(dioses) {
   resultados = "";
 }
 
-function mostrarGigantes(gigantes) {
-  gigantes.forEach((gigante) => {
+async function mostrarGigantes(gigantes) {
+	await gigantes.forEach((gigante) => {
     resultados += `
 			<tr>
 				<th scope="row">${gigante.ID_Giant}</th>
@@ -61,9 +72,9 @@ function mostrarGigantes(gigantes) {
 				<td>${gigante.Giant}</td>
 				<td>${gigante.Power}</td>
 				<td class="d-flex justify-content-center flex-column">
-					<button class="btn btn-danger removeGiant" id="removeGiant" type="button"ñ><span><i class="fa-solid fa-xmark"></i><p class="hidden-md">Remove Giant</p></span></button>
-					<button class="btn btn-warning editGiant" id="editGiant" type="button"ñ><span><i class="fa-solid fa-pen"></i><p class="hidden-md">Edit Giant</p></span></button>
-					<button class="btn btn-info seeGiant" id="seeGiant" type="button"ñ><span><i class="fa-solid fa-eye"></i><p class="hidden-md">See Giant</p></span></button>
+					<button class="btn btn-danger removeGiant" id="removeGiant" type="button" onclick="borrarRegistro(${gigante.ID_Giant},'giants');"><span><i class="fa-solid fa-xmark"></i><p class="hidden-md">Remove Giant</p></span></button>
+					<button class="btn btn-warning editGiant" id="editGiant" type="button" data-bs-toggle="modal" data-bs-target="#modal" onclick="editarRegistro(${gigante.ID_Giant},'giants');"><span><i class="fa-solid fa-pen"></i><p class="hidden-md">Edit Giant</p></span></button>
+					<button class="btn btn-info seeGiant" id="seeGiant" type="button"><span><i class="fa-solid fa-eye"></i><p class="hidden-md">See Giant</p></span></button>
 				</td>
 			</tr>
 		`;
@@ -74,10 +85,10 @@ function mostrarGigantes(gigantes) {
 
 // FUNCIONES PARA MOSTRAR EN EL MODAL
 // Con JQuery y on nos permite acceder a cada boton dependiendo de los registros
-const on = (element, event, selector, handler) => {
-  element.addEventListener(event, (e) => {
-    if (e.target.closest(selector)) {
-      handler(e);
+const on = async (element, event, selector, handler) => {
+  await element.addEventListener(event, async (e) => {
+    if (await e.target.closest(selector)) {
+      await handler(e);
     }
   });
 };
@@ -115,21 +126,25 @@ on(document, "click", "#addGod", (e) => {
     ).value;
     let powerGod = document.getElementById("powerGod").value;
     let imgGod = document.getElementById("imgGod").files[0].name;
-    await fetch("http://localhost:3880/api/gods", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        Name: nameGod,
-        God: nameGodRepresentation,
-        Power: powerGod,
-        img: imgGod,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        obtenerDatos();
-        $(modal).modal("hide");
-      });
+	try{
+		let response = await fetch("http://localhost:3880/api/gods", {
+		  method: "POST",
+		  headers: { "Content-Type": "application/json" },
+		  body: JSON.stringify({
+			Name: nameGod,
+			God: nameGodRepresentation,
+			Power: powerGod,
+			img: imgGod,
+		  }),
+		})
+		if(response.ok){
+			let data = await response.json();
+			obtenerDatos(data);
+			$(modal).modal("hide");
+		}
+	}catch(error){
+		console.error('Error: ',error);
+	}
   });
 });
 
@@ -166,110 +181,155 @@ on(document, "click", "#addGiant", (e) => {
 		).value;
 		let powerGiant = document.getElementById("powerGiant").value;
 		let imgGiant = document.getElementById("imgGiant").files[0].name;
-		await fetch("http://localhost:3880/api/giants", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				Name: nameGiant,
-				Giant: nameGiantRepresentation,
-				Power: powerGiant,
-				img: imgGiant,
-			}),
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				obtenerDatos();
+		try{
+			let response = await fetch("http://localhost:3880/api/giants", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					Name: nameGiant,
+					Giant: nameGiantRepresentation,
+					Power: powerGiant,
+					img: imgGiant,
+				}),
+			})
+
+			if(response.ok){
+				let data = await response.json();
+				obtenerDatos(data);
 				$(modal).modal("hide");
-			});
+			}
+		}catch(error){
+			console.error('Error: ',error);
+		}
 	});
 });
 
-// FUNCION PARA BORRAR DIOSES
-on(document, "click", "#removeGod", (e) => {
-  const fila = e.target.parentNode.parentNode.parentNode.parentNode;
-  const id = fila.firstElementChild.innerHTML;
-  alertify.confirm(
-    "Deseas eliminar este dios",
-    async function () {
-    await fetch("http://localhost:3880/api/god/" + id, { method: "DELETE" })
-        .then((res) => res.json())
-        .then(() => location.reload());
-      alertify.success("Eliminado");
-    },
-    function () {
-      alertify.error("Cancelar");
-    }
-  );
-});
 
-// FUNCION PARA BORRAR GIGANTES
-on(document, "click", "#removeGiant", (e) => {
-  const fila = e.target.parentNode.parentNode.parentNode.parentNode;
-  const id = fila.firstElementChild.innerHTML;
-  alertify.confirm(
-    "Deseas eliminar este gigante",
-    async function () {
-    await fetch("http://localhost:3880/api/giant/" + id, {
-        method: "DELETE",
-      })
-        .then((res) => res.json())
-        .then(() => location.reload());
-      alertify.success("Eliminado");
-    },
-    function () {
-      alertify.error("Cancelar");
-    }
-  );
-});
+// FUNCION PARA BORRAR REGISTRO
 
+window.borrarRegistro = function borrarRegistro(id,tabla){
+	//alert(id+' '+tabla);
+	delete_register(id,tabla);
+}
 
-// FUNCION PARA EDITAR DIOSES 
-on(document, "click", "#editGod", (e) => {
-    const fila = e.target.parentNode.parentNode.parentNode.parentNode;
-    const id = fila.firstElementChild.innerHTML;
-	modalTitle.innerHTML = document.getElementById("editGod").textContent;
-    modalBody.innerHTML = `
-	<form id="formEditGod">
-		<div class="mb-3">
-			<label for="nameGod" class="form-label">Name in the Netflix Serie</label>
-			<input type="text" class="form-control" id="nameGod" aria-describedby="nameLabel">
-		</div>
-		<div class="mb-3">
-			<label for="nameGodRepresentation" class="form-label">God's name</label>
-			<input type="text" class="form-control" id="nameGodRepresentation" aria-describedby="nameLabel">
-		</div>
-		<div class="mb-3">
-			<label for="powerGod" class="form-label">God's powers</label>
-			<input type="text" class="form-control" id="powerGod" aria-describedby="powerLabel">
-		</div>
-		<div class="mb-3">
-			<label for="imgGod" class="form-label">God's Image</label>
-			<input type="file" class="form-control" id="imgGod" aria-describedby="imagenLabel" accept="image/*">
-		</div>
-		<button type="submit" class="btn btn-warning" id="btnSubmit">Edit</button>
-	</form>
-	`;
+window.editarRegistro = function editRegistro(id, tabla){
+	editarRegistro(id,tabla);
+}
 
-	obtener_datos_dios(id);
+function delete_register(id,tabla){
+	alertify.confirm("Deseas eliminar este registro?",
+		async function(){
+			console.log(id,tabla);
+			if(tabla == 'gods'){
+				try{
+					let llamadaApi = await fetch("http://localhost:3880/api/god/" + id, { method: "DELETE" });
+	
+					if(llamadaApi.ok){
+						//console.log('CORRECTO || status: '+llamadaApi.status);
+						let = respuestaApi = await llamadaApi.json();
+						//console.log(respuestaApi);
+						location.reload();
+						alertify.success("Eliminado");
+					}else{
+						console.log('ERROR || status: '+llamadaApi.status);
+					}
+				}catch(error){
+					console.error("Error: "+error);
+				}
+			}else if(tabla == 'giants'){
+				try{
+					let llamadaApi = await fetch("http://localhost:3880/api/giant/" + id, {method: "DELETE"});	
+					if(llamadaApi.ok){
+						//console.log('CORRECTO || status: '+llamadaApi.status);
+						let = respuestaApi = await llamadaApi.json();
+						//console.log(respuestaApi);
+						location.reload();
+						alertify.success("Eliminado");
+					}else{
+						console.log('ERROR || status: '+llamadaApi.status);
+					}
+				}catch(error){
+					console.error("Error: "+error);
+				}
+			}
+			
+		}
+	);
+}
 
-	function obtener_datos_dios(id){
-		let nameGod = document.getElementById("nameGod");
-		let god = document.getElementById("nameGodRepresentation");
-		let powerGod = document.getElementById("powerGod");
-		let imgGod = document.getElementById("imgGod").files[0].name;
-
-		let formEditGod = document.getElementById("formEditGod");
-		formEditGod.addEventListener("submit", function(e){
-			e.preventDefault();
-			fetch("http://localhost:3880/api/god/"+id,{
-				method:"GET",
-				
-
-			})
-			.then((res) => res.json())
-			.then(data => console.log(data))
-		});
+// FUNCION PARA EDITAR 
+async function editarRegistro(id, tabla){
+	//console.log("id: "+id+", tabla: "+tabla)
+	modalTitle.innerHTML = 'Editar Registro';
+	if(tabla == "gods"){
+		let responseApi = await fetch("http://localhost:3880/api/god/"+id);
+		if(responseApi.ok){
+			let dataApi = await responseApi.json();
+			console.log(dataApi[0]);
+			modalBody.innerHTML = "";
+			modalBody.innerHTML = `
+				<form id="formEditGod">
+					<div class="mb-3">
+						<label for="idGod" class="form-label">Id</label>
+						<input type="text" class="form-control" id="idGod" aria-describedby="nameLabel" value='${dataApi[0].ID_God}' readonly>
+					</div>
+					<div class="mb-3">
+						<label for="nameGod" class="form-label">Name in the Netflix Serie</label>
+						<input type="text" class="form-control" id="nameGod" aria-describedby="nameLabel" value='${dataApi[0].Name}'>
+					</div>
+					<div class="mb-3">
+						<label for="nameGodRepresentation" class="form-label">God's name</label>
+						<input type="text" class="form-control" id="nameGodRepresentation" aria-describedby="nameLabel" value='${dataApi[0].God}'>
+					</div>
+					<div class="mb-3">
+						<label for="powerGod" class="form-label">God's powers</label>
+						<input type="text" class="form-control" id="powerGod" aria-describedby="powerLabel" value='${dataApi[0].Power}'>
+					</div>
+					<div class="mb-3">
+						<label for="imgGod" class="form-label">God's Image</label>
+						<input type="file" class="form-control" id="imgGod" aria-describedby="imagenLabel" accept="image/*" value='${dataApi[0].Img}'>
+					</div>
+					<button type="submit" class="btn btn-primary" id="btnSubmit">Add</button>
+				</form>
+			`;
+		}
+		
+	}else if(tabla == "giants"){
+		let responseApi = await fetch("http://localhost:3880/api/giant/"+id);
+		if(responseApi.ok){
+			let dataApi = await responseApi.json();
+			console.log(dataApi[0]);
+			modalBody.innerHTML="";
+			modalBody.innerHTML = `
+				<form id="formEditGiant">
+					<div class="mb-3">
+						<label for="idGiant" class="form-label">Id</label>
+						<input type="text" class="form-control" id="idGiant" aria-describedby="nameLabel" value='${dataApi[0].ID_Giant}' readonly>
+					</div>
+					<div class="mb-3">
+						<label for="nameGiant" class="form-label">Name in the Netflix Serie</label>
+						<input type="text" class="form-control" id="nameGiant" aria-describedby="nameLabel" value='${dataApi[0].Name}'>
+					</div>
+					<div class="mb-3">
+						<label for="nameGiantRepresentation" class="form-label">Giant's Name</label>
+						<input type="text" class="form-control" id="nameGiantRepresentation" aria-describedby="nameLabel" value='${dataApi[0].Giant}'>
+					</div>
+					<div class="mb-3">
+						<label for="powerGiant" class="form-label">Giant's power</label>
+						<input type="text" class="form-control" id="powerGiant" aria-describedby="powerLabel" value='${dataApi[0].Power}'>
+					</div>
+					<div class="mb-3">
+						<label for="imgGiant" class="form-label">Giant's Image</label>
+						<input type="file" class="form-control" id="imgGiant" aria-describedby="imagenLabel" accept="image/*" value='${dataApi[0].Img}'>
+					</div>
+					<button type="submit" class="btn btn-primary">Add</button>
+				</form>
+			`;
+		}
+		
 	}
-  });
+}
+
 });
+
 
