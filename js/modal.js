@@ -54,7 +54,7 @@ async function mostrarDioses(dioses) {
 				<td class="d-flex justify-content-center flex-column"">
 					<button class="btn btn-danger removeGod" class="removeGod" id="removeGod" type="button" onclick="borrarRegistro(${dios.ID_God},'gods');"><span><i class="fa-solid fa-xmark"></i><p class="hidden-md">Remove God</p></span></button>
 					<button class="btn btn-warning editGod" class="editGod" id="editGod" type="button" data-bs-toggle="modal" data-bs-target="#modal" onclick="editarRegistro(${dios.ID_God},'gods');"><span><i class="fa-solid fa-pen"></i><p class="hidden-md">Edit God</p></span></button>
-					<button class="btn btn-info seeGod" class="seeGod" id="seeGod" type="button" data-bs-toggle="modal" data-bs-target="#modal"><span><i class="fa-solid fa-eye"></i><p class="hidden-md">See God</p></span></button>
+					<button class="btn btn-info seeGod" class="seeGod" id="seeGod" type="button" data-bs-toggle="modal" data-bs-target="#modal" onclick="verRegistro(${dios.ID_God},'gods');"><span><i class="fa-solid fa-eye"></i><p class="hidden-md">See God</p></span></button>
 				</td>
 			</tr>
 		`;
@@ -74,7 +74,7 @@ async function mostrarGigantes(gigantes) {
 				<td class="d-flex justify-content-center flex-column">
 					<button class="btn btn-danger removeGiant" id="removeGiant" type="button" onclick="borrarRegistro(${gigante.ID_Giant},'giants');"><span><i class="fa-solid fa-xmark"></i><p class="hidden-md">Remove Giant</p></span></button>
 					<button class="btn btn-warning editGiant" id="editGiant" type="button" data-bs-toggle="modal" data-bs-target="#modal" onclick="editarRegistro(${gigante.ID_Giant},'giants');"><span><i class="fa-solid fa-pen"></i><p class="hidden-md">Edit Giant</p></span></button>
-					<button class="btn btn-info seeGiant" id="seeGiant" type="button"><span><i class="fa-solid fa-eye"></i><p class="hidden-md">See Giant</p></span></button>
+					<button class="btn btn-info seeGiant" id="seeGiant" type="button" data-bs-toggle="modal" data-bs-target="#modal" onclick="verRegistro(${gigante.ID_Giant},'giants');"><span><i class="fa-solid fa-eye"></i><p class="hidden-md">See Giant</p></span></button>
 				</td>
 			</tr>
 		`;
@@ -216,6 +216,10 @@ window.editarRegistro = function editRegistro(id, tabla){
 	editarRegistro(id,tabla);
 }
 
+window.verRegistro = function seeRegistro(id, tabla){
+	see_Registro(id,tabla);
+}
+
 function delete_register(id,tabla){
 	alertify.confirm("Deseas eliminar este registro?",
 		async function(){
@@ -268,7 +272,7 @@ async function editarRegistro(id, tabla){
 			console.log(dataApi[0]);
 			modalBody.innerHTML = "";
 			modalBody.innerHTML = `
-				<form id="formEditGod">
+				<form id="formEditGod" method="POST" action="#">
 					<div class="mb-3">
 						<label for="idGod" class="form-label">Id</label>
 						<input type="text" class="form-control" id="idGod" aria-describedby="nameLabel" value='${dataApi[0].ID_God}' readonly>
@@ -286,12 +290,64 @@ async function editarRegistro(id, tabla){
 						<input type="text" class="form-control" id="powerGod" aria-describedby="powerLabel" value='${dataApi[0].Power}'>
 					</div>
 					<div class="mb-3">
-						<label for="imgGod" class="form-label">God's Image</label>
-						<input type="file" class="form-control" id="imgGod" aria-describedby="imagenLabel" accept="image/*" value='${dataApi[0].Img}'>
+						<p>
+						<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
+							See Image
+						</button>
+						<div class="mb-3">
+							<label for="formFile" class="form-label">Change Image</label>
+							<input class="form-control" type="file" id="formFileGods" accept="image/*">
+						</div>
+						</p>
+						<div style="min-height: 120px;">
+						<div class="collapse collapse-horizontal" id="collapseWidthExample">
+							<div class="card rounded shadow p-3 mb-5 bg-body-tertiary rounded" style="width: 100%;">
+								<img src="../img/Gods/${dataApi[0].img}" alt="${dataApi[0].img}" class="border border-black">
+							</div>
+						</div>
+						</div>
 					</div>
-					<button type="submit" class="btn btn-primary" id="btnSubmit">Add</button>
+					<button type="submit" class="btn btn-warning" id="btnSubmit">Update</button>
 				</form>
 			`;
+			$('#formEditGod').submit(async function(e){
+				e.preventDefault();
+				let id = $('#idGod').val();
+				let name = $('#nameGod').val();
+				let god = $('#nameGodRepresentation').val();
+				let power = $('#powerGod').val();
+				let img = $('#formFileGods').val();
+
+				if(img == ''){
+					img = dataApi[0].img;
+				}
+
+				try{
+					let response = await fetch("http://localhost:3880/api/god/"+id, {
+					  method: "PUT",
+					  headers: { "Content-Type": "application/json" },
+					  body: JSON.stringify({
+						Name: name,
+						God: god,
+						Power: power,
+						img: img,
+					  }),
+					})
+					if(response.ok){
+						let data = await response.json();
+						obtenerDatos(data);
+						$(modal).modal("hide");
+						alertify.success("Actualizado");
+					}
+				}catch(error){
+					console.error('Error: ',error);
+					alertify.error("Error: "+error);
+				}
+
+				console.log(id+' '+name+''+god+' '+power+' '+img);
+				console.log(img);
+			});
+			//alert(dataApi[0].img)
 		}
 		
 	}else if(tabla == "giants"){
@@ -319,15 +375,67 @@ async function editarRegistro(id, tabla){
 						<input type="text" class="form-control" id="powerGiant" aria-describedby="powerLabel" value='${dataApi[0].Power}'>
 					</div>
 					<div class="mb-3">
-						<label for="imgGiant" class="form-label">Giant's Image</label>
-						<input type="file" class="form-control" id="imgGiant" aria-describedby="imagenLabel" accept="image/*" value='${dataApi[0].Img}'>
+						<p>
+						<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
+							Ver Imagen
+						</button>
+						<div class="mb-3">
+							<label for="formFile" class="form-label">Change Image</label>
+							<input class="form-control" type="file" id="formFileGiants">
+						</div>
+						</p>
+						<div style="min-height: 120px;">
+						<div class="collapse collapse-horizontal" id="collapseWidthExample">
+							<div class="card rounded shadow p-3 mb-5 bg-body-tertiary rounded" style="width: 100%;">
+								<img src="../img/Giants/${dataApi[0].img}" alt="${dataApi[0].img}" class="border border-black">
+							</div>
+						</div>
+						</div>
 					</div>
-					<button type="submit" class="btn btn-primary">Add</button>
+					<button type="submit" class="btn btn-warning">Update</button>
 				</form>
 			`;
 		}
 		
 	}
+}
+
+async function see_Registro(id, tabla){
+	modalTitle.innerHTML = "Ver Registro";
+	if(tabla == "gods"){
+		let responseApi = await fetch("http://localhost:3880/api/god/"+id);
+		if(responseApi.ok){
+			let dataApi = await responseApi.json();
+			console.log(dataApi[0]);
+			modalBody.innerHTML="";
+			modalBody.innerHTML = `
+				<div class="card text-center" style="width: 100%;">
+					<img src="../img/Gods/${dataApi[0].img}" class="card-img-top" alt="...">
+					<div class="card-body">
+						<h2 class="card-title fw-bold">${dataApi[0].Name}</h2>
+						<p class="card-text">${dataApi[0].God}</p>
+						<p class="card-text">${dataApi[0].Power}</p>
+					</div>
+				</div>`;
+		}
+	}else if(tabla == "giants"){
+		let responseApi = await fetch("http://localhost:3880/api/giant/"+id);
+		if(responseApi.ok){
+			let dataApi = await responseApi.json();
+			console.log(dataApi[0]);
+			modalBody.innerHTML="";
+			modalBody.innerHTML = `
+				<div class="card text-center" style="width: 100%;">
+					<img src="../img/Giants/${dataApi[0].img}" class="card-img-top" alt="...">
+					<div class="card-body">
+						<h2 class="card-title fw-bold">${dataApi[0].Name}</h2>
+						<p class="card-text">${dataApi[0].Giant}</p>
+						<p class="card-text">${dataApi[0].Power}</p>
+					</div>
+				</div>`;
+		}
+	}	
+
 }
 
 });
