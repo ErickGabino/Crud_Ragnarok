@@ -395,6 +395,43 @@ async function editarRegistro(id, tabla){
 					<button type="submit" class="btn btn-warning">Update</button>
 				</form>
 			`;
+			$('#formEditGiant').submit(async function(e){
+				e.preventDefault();
+				let id = $('#idGiant').val();
+				let name = $('#nameGiant').val();
+				let giant = $('#nameGiantRepresentation').val();
+				let power = $('#powerGiant').val();
+				let img = $('#formFileGiants').val();
+
+				if(img == ''){
+					img = dataApi[0].img;
+				}
+
+				try{
+					let response = await fetch("http://localhost:3880/api/giant/"+id, {
+					  method: "PUT",
+					  headers: { "Content-Type": "application/json" },
+					  body: JSON.stringify({
+						Name: name,
+						Giant: giant,
+						Power: power,
+						img: img,
+					  }),
+					})
+					if(response.ok){
+						let data = await response.json();
+						obtenerDatos(data);
+						$(modal).modal("hide");
+						alertify.success("Actualizado");
+					}
+				}catch(error){
+					console.error('Error: ',error);
+					alertify.error("Error: "+error);
+				}
+
+				console.log(id+' '+name+''+god+' '+power+' '+img);
+				console.log(img);
+			});
 		}
 		
 	}
